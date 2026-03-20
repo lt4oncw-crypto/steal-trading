@@ -32,77 +32,94 @@ const users = [];
 let activeChatUserId = null;
 let chatHistory = {};
 
-// Cross-Tab Sync via localStorage
-window.addEventListener('storage', (event) => {
-    if (event.key === 'market_sync_event' && event.newValue) {
-        const data = JSON.parse(event.newValue);
-        
-        if (data.type === 'ADD_PLAYER') {
-            if (data.targetUsername.toLowerCase() === myUsername.toLowerCase() && myUsername !== "Guest") {
-                const existingUser = users.find(u => u.name.toLowerCase() === data.sender.name.toLowerCase());
-                if (!existingUser) {
-                    const newId = 'u' + (users.length + 1) + '_' + Date.now();
-                    const newUser = {
-                        id: newId,
-                        name: data.sender.name,
-                        avatar: data.sender.avatar,
-                        isOnline: true,
-                        status: data.sender.status
-                    };
-                    users.push(newUser);
-                    chatHistory[newId] = [];
-                    renderUserList();
-                    showToast(`${data.sender.name} added you to their market! 🌐`);
+// Global Multiplayer Sync using Public MQTT WebSocket
+let mqttClient;
+
+function setupGlobalSync() {
+    // Connect to a free public MQTT broker for instant global multiplayer
+    mqttClient = mqtt.connect('wss://broker.emqx.io:8084/mqtt');
+    
+    mqttClient.on('connect', () => {
+        mqttClient.subscribe('brainrot_market_global_events_v4');
+        console.log("Connected to Global Market Network 🌐");
+    });
+    
+    mqttClient.on('message', (topic, message) => {
+        try {
+            const data = JSON.parse(message.toString());
+            
+            if (data.type === 'ADD_PLAYER') {
+                if (data.targetUsername.toLowerCase() === myUsername.toLowerCase() && myUsername !== "Guest") {
+                    const existingUser = users.find(u => u.name.toLowerCase() === data.sender.name.toLowerCase());
+                    if (!existingUser) {
+                        const newId = 'u' + (users.length + 1) + '_' + Date.now();
+                        const newUser = {
+                            id: newId,
+                            name: data.sender.name,
+                            avatar: data.sender.avatar,
+                            isOnline: true,
+                            status: data.sender.status
+                        };
+                        users.push(newUser);
+                        chatHistory[newId] = [];
+                        renderUserList();
+                        showToast(`${data.sender.name} added you to their market! 🌐`);
+                    }
+                }
+            } else if (data.type === 'CHAT_MESSAGE') {
+                if (data.targetUsername.toLowerCase() === myUsername.toLowerCase() && myUsername !== "Guest") {
+                    let sender = users.find(u => u.name.toLowerCase() === data.senderName.toLowerCase());
+                    if (!sender) {
+                        const newId = 'u' + (users.length + 1) + '_' + Date.now();
+                        sender = { id: newId, name: data.senderName, avatar: '🗿', isOnline: true, status: "Sigma Grindset Active" };
+                        users.push(sender);
+                        chatHistory[newId] = [];
+                        renderUserList();
+                    }
+                    chatHistory[sender.id].push({ sender: 'them', text: data.text });
+                    if (activeChatUserId === sender.id) {
+                        renderMessages();
+                    } else {
+                        showToast(`New message from ${sender.name}! 💬`);
+                    }
+                }
+            } else if (data.type === 'TRADE_PROPOSAL') {
+                if (data.targetUsername.toLowerCase() === myUsername.toLowerCase() && myUsername !== "Guest") {
+                    let sender = users.find(u => u.name.toLowerCase() === data.senderName.toLowerCase());
+                    if (!sender) {
+                        const newId = 'u' + (users.length + 1) + '_' + Date.now();
+                        sender = { id: newId, name: data.senderName, avatar: '🗿', isOnline: true, status: "Sigma Grindset Active" };
+                        users.push(sender);
+                        chatHistory[newId] = [];
+                        renderUserList();
+                    }
+                    chatHistory[sender.id].push({
+                        type: 'trade',
+                        sender: 'them',
+                        offer: data.offer,
+                        request: data.request,
+                        status: 'pending'
+                    });
+                    if (activeChatUserId === sender.id) {
+                        renderMessages();
+                    } else {
+                        showToast(`New trade proposal from ${sender.name}! 🤝`);
+                    }
                 }
             }
-        } else if (data.type === 'CHAT_MESSAGE') {
-            if (data.targetUsername.toLowerCase() === myUsername.toLowerCase() && myUsername !== "Guest") {
-                let sender = users.find(u => u.name.toLowerCase() === data.senderName.toLowerCase());
-                if (!sender) {
-                    const newId = 'u' + (users.length + 1) + '_' + Date.now();
-                    sender = { id: newId, name: data.senderName, avatar: '🗿', isOnline: true, status: "Sigma Grindset Active" };
-                    users.push(sender);
-                    chatHistory[newId] = [];
-                    renderUserList();
-                }
-                chatHistory[sender.id].push({ sender: 'them', text: data.text });
-                if (activeChatUserId === sender.id) {
-                    renderMessages();
-                } else {
-                    showToast(`New message from ${sender.name}! 💬`);
-                }
-            }
-        } else if (data.type === 'TRADE_PROPOSAL') {
-            if (data.targetUsername.toLowerCase() === myUsername.toLowerCase() && myUsername !== "Guest") {
-                let sender = users.find(u => u.name.toLowerCase() === data.senderName.toLowerCase());
-                if (!sender) {
-                    const newId = 'u' + (users.length + 1) + '_' + Date.now();
-                    sender = { id: newId, name: data.senderName, avatar: '🗿', isOnline: true, status: "Sigma Grindset Active" };
-                    users.push(sender);
-                    chatHistory[newId] = [];
-                    renderUserList();
-                }
-                chatHistory[sender.id].push({
-                    type: 'trade',
-                    sender: 'them',
-                    offer: data.offer,
-                    request: data.request,
-                    status: 'pending'
-                });
-                if (activeChatUserId === sender.id) {
-                    renderMessages();
-                } else {
-                    showToast(`New trade proposal from ${sender.name}! 🤝`);
-                }
-            }
+        } catch(err) {
+            console.error(err);
         }
-    }
-});
+    });
+}
+
+// Initialize Global Sync
+setupGlobalSync();
 
 function sendSyncEvent(data) {
-    if (myUsername === "Guest") return;
+    if (myUsername === "Guest" || !mqttClient) return;
     data._t = Date.now();
-    localStorage.setItem('market_sync_event', JSON.stringify(data));
+    mqttClient.publish('brainrot_market_global_events_v4', JSON.stringify(data));
 }
 
 function broadcastAddPlayer(targetName) {
