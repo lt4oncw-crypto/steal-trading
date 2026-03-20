@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brainrot Market | Sigma Trading</title>
+    <meta name="description" content="Trade your brainrot items with real users.">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Login Overlay -->
+    <div id="loginOverlay" class="modal-overlay">
+        <div class="modal glass pulse-animation" style="max-width: 400px; text-align: center;">
+            <h1 style="font-size: 2rem; margin-bottom: 0.5rem; background: linear-gradient(90deg, var(--primary-neon), var(--secondary-neon)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🧠 Brainrot Market</h1>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Sign in to start trading</p>
+            
+            <div style="text-align: left; margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 5px; color: var(--text-main); font-weight: bold;">Roblox Username</label>
+                <input type="text" id="robloxUsernameInput" class="styled-input" placeholder="e.g. Builderman123">
+            </div>
+            
+            <button id="loginBtn" class="btn primary-btn magic-hover" style="width: 100%; padding: 1rem; font-size: 1.1rem;">Enter Market</button>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Navbar -->
+        <nav class="navbar glass">
+            <div class="logo">🧠 Brainrot Market</div>
+            <div class="user-stats">
+                <span id="myUsernameDisplay" style="font-weight: 700; margin-right: 15px; color: var(--primary-neon);"></span>
+                <button id="inventoryBtn" class="btn secondary-btn" style="padding: 0.5rem 1rem; margin-right: 10px;">🎒 My Brainrots</button>
+                <div id="myProfileBtn" class="profile-pic" style="cursor: pointer;" title="View Profile">🗿</div>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <!-- User Feed Section -->
+            <section class="user-feed glass">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2 style="margin-bottom: 0;">🌐 Live Market</h2>
+                    <button id="openHubBtn" class="btn secondary-btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">➕ Player Hub</button>
+                </div>
+                <div class="user-list" id="userList">
+                    <!-- Users injected via JS -->
+                </div>
+            </section>
+
+            <!-- Chat / Interaction Area -->
+            <section class="chat-area glass">
+                <div class="chat-header">
+                    <div class="chat-header-info">
+                        <h3 id="chatTitle">Select a user to trade with</h3>
+                    </div>
+                    <button id="requestTradeBtn" class="btn primary-btn hidden">💸 Request Trade</button>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="empty-state">No active chat. Click a user to start messaging!</div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" id="chatInput" placeholder="Send a message..." disabled>
+                    <button id="sendBtn" class="btn" disabled>Send</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Inventory Modal -->
+        <div id="inventoryModal" class="modal-overlay hidden">
+            <div class="modal glass pulse-animation" style="max-width: 800px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2>🎒 My Brainrots</h2>
+                    <button class="btn secondary-btn" style="padding: 0.5rem;" id="closeInventoryBtn">❌</button>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border);">
+                    <select id="spawnBrainrotSelect" class="styled-select" style="margin-bottom: 0;">
+                        <!-- JS populated -->
+                    </select>
+                    <button id="spawnBrainrotBtn" class="btn primary-btn magic-hover">➕ Add Item</button>
+                </div>
+
+                <div class="inventory-grid" id="inventoryGrid">
+                    <!-- Items populated via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Trade Modal -->
+        <div id="tradeModal" class="modal-overlay hidden">
+            <div class="modal glass pulse-animation">
+                <h2>🤝 Propose Trade with <span id="tradeTargetName">User</span></h2>
+                <div class="trade-interface">
+                    <div class="trade-side your-side">
+                        <h3>You Offer</h3>
+                        <select id="offerBrainrot" class="styled-select">
+                            <optgroup label="Common">
+                                <option value="Noobini Pizzanini">🍕 Noobini Pizzanini</option>
+                                <option value="Lirili Larila">🎶 Lirili Larila</option>
+                                <option value="Tim Cheese">🧀 Tim Cheese</option>
+                                <option value="Flurifura">🌸 Flurifura</option>
+                                <option value="Talpa Di Fero">⛏️ Talpa Di Fero</option>
+                                <option value="Svinia Bombardino">💣 Svinia Bombardino</option>
+                                <option value="Pipi Kiwi">🥝 Pipi Kiwi</option>
+                                <option value="Racooni Jandelini">🦝 Racooni Jandelini</option>
+                                <option value="Pipi Corni">🦄 Pipi Corni</option>
+                                <option value="Noobini Santanini">🎅 Noobini Santanini</option>
+                            </optgroup>
+                            <optgroup label="Rare">
+                                <option value="Trippi Troppi">🌀 Trippi Troppi</option>
+                                <option value="Gangster Footera">👟 Gangster Footera</option>
+                                <option value="Bandito Bobritto">🌯 Bandito Bobritto</option>
+                                <option value="Boneca Ambalabu">🎎 Boneca Ambalabu</option>
+                                <option value="Cacto Hipopotamo">🦛 Cacto Hipopotamo</option>
+                                <option value="Ta Ta Ta Ta Sahur">🥁 Ta Ta Ta Ta Sahur</option>
+                            </optgroup>
+                            <optgroup label="Brainrot God">
+                                <option value="Cocofanto Elefanto">🐘 Cocofanto Elefanto</option>
+                                <option value="Girafa Celestre">🦒 Girafa Celestre</option>
+                                <option value="Gattatino Nyanino">🐱 Gattatino Nyanino</option>
+                                <option value="Chihuahini Taconini">🌮 Chihuahini Taconini</option>
+                                <option value="Los Crocodilitos">🐊 Los Crocodilitos</option>
+                                <option value="Money Money Man">💸 Money Money Man</option>
+                                <option value="Tipi Topi Taco">🌮 Tipi Topi Taco</option>
+                            </optgroup>
+                            <optgroup label="Secret/OG">
+                                <option value="Headless Horseman">🎃 Headless Horseman</option>
+                                <option value="Love Love Bear">🧸 Love Love Bear</option>
+                                <option value="Skibidi Toilet">🚽 Skibidi Toilet</option>
+                                <option value="Dragon Cannelloni">🐉 Dragon Cannelloni</option>
+                                <option value="Celestial Pegasus">🦄 Celestial Pegasus</option>
+                                <option value="Cooki and Milki">🍪 Cooki and Milki</option>
+                                <option value="Burguro and Fryuro">🍔 Burguro and Fryuro</option>
+                                <option value="Money Money Puggy">🐶 Money Money Puggy</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="trade-icon">➡️</div>
+                    <div class="trade-side their-side">
+                        <h3>You Request</h3>
+                        <select id="requestBrainrot" class="styled-select">
+                            <optgroup label="Common">
+                                <option value="Noobini Pizzanini">🍕 Noobini Pizzanini</option>
+                                <option value="Lirili Larila">🎶 Lirili Larila</option>
+                                <option value="Tim Cheese">🧀 Tim Cheese</option>
+                                <option value="Flurifura">🌸 Flurifura</option>
+                                <option value="Talpa Di Fero">⛏️ Talpa Di Fero</option>
+                                <option value="Svinia Bombardino">💣 Svinia Bombardino</option>
+                                <option value="Pipi Kiwi">🥝 Pipi Kiwi</option>
+                                <option value="Racooni Jandelini">🦝 Racooni Jandelini</option>
+                                <option value="Pipi Corni">🦄 Pipi Corni</option>
+                                <option value="Noobini Santanini">🎅 Noobini Santanini</option>
+                            </optgroup>
+                            <optgroup label="Rare">
+                                <option value="Trippi Troppi">🌀 Trippi Troppi</option>
+                                <option value="Gangster Footera">👟 Gangster Footera</option>
+                                <option value="Bandito Bobritto">🌯 Bandito Bobritto</option>
+                                <option value="Boneca Ambalabu">🎎 Boneca Ambalabu</option>
+                                <option value="Cacto Hipopotamo">🦛 Cacto Hipopotamo</option>
+                                <option value="Ta Ta Ta Ta Sahur">🥁 Ta Ta Ta Ta Sahur</option>
+                            </optgroup>
+                            <optgroup label="Brainrot God">
+                                <option value="Cocofanto Elefanto">🐘 Cocofanto Elefanto</option>
+                                <option value="Girafa Celestre">🦒 Girafa Celestre</option>
+                                <option value="Gattatino Nyanino">🐱 Gattatino Nyanino</option>
+                                <option value="Chihuahini Taconini">🌮 Chihuahini Taconini</option>
+                                <option value="Los Crocodilitos">🐊 Los Crocodilitos</option>
+                                <option value="Money Money Man">💸 Money Money Man</option>
+                                <option value="Tipi Topi Taco">🌮 Tipi Topi Taco</option>
+                            </optgroup>
+                            <optgroup label="Secret/OG">
+                                <option value="Headless Horseman">🎃 Headless Horseman</option>
+                                <option value="Love Love Bear">🧸 Love Love Bear</option>
+                                <option value="Skibidi Toilet">🚽 Skibidi Toilet</option>
+                                <option value="Dragon Cannelloni">🐉 Dragon Cannelloni</option>
+                                <option value="Celestial Pegasus">🦄 Celestial Pegasus</option>
+                                <option value="Cooki and Milki">🍪 Cooki and Milki</option>
+                                <option value="Burguro and Fryuro">🍔 Burguro and Fryuro</option>
+                                <option value="Money Money Puggy">🐶 Money Money Puggy</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="cancelTradeBtn" class="btn secondary-btn">Cancel</button>
+                    <button id="confirmTradeBtn" class="btn primary-btn magic-hover">Send Proposal</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Modal -->
+        <div id="profileModal" class="modal-overlay hidden">
+            <div class="modal glass pulse-animation" style="max-width: 400px; text-align: center;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2>👤 My Profile</h2>
+                    <button class="btn secondary-btn" style="padding: 0.5rem;" id="closeProfileBtn">❌</button>
+                </div>
+                
+                <div style="font-size: 4rem; margin-bottom: 10px;">🗿</div>
+                <h3 id="profileUsername" style="font-size: 1.5rem; color: var(--primary-neon); margin-bottom: 5px;">@Guest</h3>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Sigma Grindset Active</p>
+                
+                <div style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 15px; text-align: left; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="color: var(--text-muted);">Total Brainrots:</span>
+                        <strong id="profileTotalItems">0</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="color: var(--text-muted);">Secret/OG Owned:</span>
+                        <strong id="profileSecretItems" style="color: var(--secondary-neon);">0</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-muted);">Account Value:</span>
+                        <strong id="profileAccountValue" style="color: var(--primary-neon);">0 Aura</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player Hub Modal -->
+        <div id="playerHubModal" class="modal-overlay hidden">
+            <div class="modal glass pulse-animation" style="max-width: 450px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2>🔍 Global Player Hub</h2>
+                    <button class="btn secondary-btn" style="padding: 0.5rem;" id="closeHubBtn">❌</button>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <input type="text" id="searchPlayerName" class="styled-input" placeholder="Look up player by username..." style="margin-bottom: 0;">
+                    <button id="searchPlayerBtn" class="btn primary-btn">Search</button>
+                </div>
+
+                <div id="searchResultArea" style="min-height: 100px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                    <p style="color: var(--text-muted); font-style: italic;">Search for a player to add them.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Toast Notifications -->
+        <div id="toastContainer" class="toast-container"></div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

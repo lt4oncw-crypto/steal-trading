@@ -1,0 +1,505 @@
+:root {
+    --bg-dark: #09090b;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-hover: rgba(255, 255, 255, 0.08);
+    --primary-neon: #00ffcc;
+    --secondary-neon: #ff00ff;
+    --danger: #ff3366;
+    --text-main: #f4f4f5;
+    --text-muted: #a1a1aa;
+    --chat-me: #6366f1;
+    --chat-them: #27272a;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image: radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15), transparent 40%),
+                      radial-gradient(circle at 85% 30%, rgba(255, 0, 255, 0.1), transparent 40%);
+}
+
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.app-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--primary-neon), var(--secondary-neon));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.user-stats {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.balance {
+    font-weight: 700;
+    color: var(--primary-neon);
+    background: rgba(0, 255, 204, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+}
+
+.profile-pic {
+    font-size: 1.8rem;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.profile-pic:hover {
+    transform: scale(1.1) rotate(10deg);
+}
+
+/* Main Layout */
+.main-content {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 1.5rem;
+    flex-grow: 1;
+    min-height: 0;
+}
+
+/* User Feed */
+.user-feed {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.user-feed h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: var(--text-muted);
+}
+
+.user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.user-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.user-card:hover {
+    background: var(--glass-hover);
+    border-color: var(--glass-border);
+    transform: translateY(-2px);
+}
+
+.user-card.active {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.user-card .avatar {
+    font-size: 2rem;
+}
+
+.user-card .details h4 {
+    font-size: 1rem;
+    margin-bottom: 0.2rem;
+}
+
+.user-card .details p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Chat Area */
+.chat-area {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.chat-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.chat-header-info h3 {
+    font-size: 1.2rem;
+}
+
+.status-indicator {
+    font-size: 0.8rem;
+    color: var(--primary-neon);
+    animation: blink 1s infinite alternate;
+}
+
+@keyframes blink {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.chat-messages {
+    flex-grow: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.empty-state {
+    margin: auto;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.message {
+    max-width: 70%;
+    padding: 0.8rem 1.2rem;
+    border-radius: 18px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.8) translateY(10px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.message.me {
+    align-self: flex-end;
+    background: var(--chat-me);
+    border-bottom-right-radius: 4px;
+}
+
+.message.them {
+    align-self: flex-start;
+    background: var(--chat-them);
+    border-bottom-left-radius: 4px;
+}
+
+.trade-proposal-card {
+    background: linear-gradient(135deg, rgba(255, 0, 255, 0.1), rgba(0, 255, 204, 0.1));
+    border: 1px solid var(--secondary-neon);
+    padding: 1rem;
+    border-radius: 12px;
+    margin-top: 0.5rem;
+    width: 250px;
+}
+
+.trade-proposal-card h4 {
+    margin-bottom: 0.5rem;
+    color: var(--text-main);
+}
+
+.trade-proposal-card .trade-details {
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.trade-proposal-card .trade-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.chat-input-container {
+    padding: 1.5rem;
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    gap: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.chat-input-container input {
+    flex-grow: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 0 1.5rem;
+    color: var(--text-main);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.chat-input-container input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-neon);
+}
+
+/* Modals & Buttons */
+.btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 24px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.primary-btn {
+    background: var(--primary-neon);
+    color: #000;
+    box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+}
+
+.primary-btn:hover:not(:disabled) {
+    box-shadow: 0 0 25px rgba(0, 255, 204, 0.6);
+    transform: translateY(-2px);
+}
+
+.secondary-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+}
+
+.secondary-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.danger-btn {
+    background: var(--danger);
+    color: white;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Trade Modal Specifics */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    width: 90%;
+    max-width: 600px;
+    padding: 2.5rem;
+    text-align: center;
+}
+
+.modal h2 {
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+    background: linear-gradient(90deg, #ff00ff, #00ffcc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.trade-interface {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.trade-side {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+}
+
+.trade-side h3 {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.styled-select, .styled-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 0.8rem;
+    color: white;
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+}
+
+.styled-select option {
+    background: var(--bg-dark);
+    color: white;
+}
+
+.trade-icon {
+    font-size: 2rem;
+    animation: float 2s ease-in-out infinite;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Toasts */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 2000;
+}
+
+.toast {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border-left: 4px solid var(--primary-neon);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    color: white;
+    font-weight: 500;
+    animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, fadeOut 0.5s ease 3s forwards;
+}
+
+@keyframes slideIn {
+    0% { transform: translateX(100%); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; transform: translateX(0); }
+    100% { opacity: 0; transform: translateX(100%); }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* Inventory Styles */
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 15px;
+    max-height: 50vh;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.inventory-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.inventory-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-3px);
+}
+
+.item-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.item-count {
+    font-size: 0.8rem;
+    color: var(--primary-neon);
+    margin-top: 5px;
+}
+
+.rarity-common { color: #a1a1aa; }
+.rarity-rare { color: #3b82f6; }
+.rarity-brainrot-god { color: #f59e0b; }
+.rarity-secret-og { color: #ec4899; text-shadow: 0 0 5px rgba(236, 72, 153, 0.5); }
