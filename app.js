@@ -341,8 +341,26 @@ function renderInventory() {
             <div style="font-size: 0.7rem; color: #aaa; margin-bottom: 5px;">${rarity}</div>
             <div class="item-count">Owned: ${count}</div>
         `;
+        
+        const dropBtn = document.createElement('button');
+        dropBtn.className = 'btn magic-hover';
+        dropBtn.style = 'padding: 0.3rem 0.5rem; font-size: 0.75rem; margin-top: 8px; width: 100%; background: rgba(255, 51, 102, 0.1); border: 1px solid #ff3366; color: #ff3366; border-radius: 8px; cursor: pointer;';
+        dropBtn.innerHTML = '🗑️ Drop';
+        dropBtn.onclick = () => dropBrainrot(item);
+        card.appendChild(dropBtn);
+        
         inventoryGrid.appendChild(card);
     });
+}
+
+function dropBrainrot(item) {
+    const index = myInventory.indexOf(item);
+    if (index > -1) {
+        myInventory.splice(index, 1);
+        saveInventory();
+        renderInventory();
+        showToast(`Dropped 1 ${item} 🗑️`);
+    }
 }
 
 // Profile Logic
