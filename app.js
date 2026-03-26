@@ -155,6 +155,7 @@ const chatTitle = document.getElementById('chatTitle');
 const chatMessagesEl = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
 const sendBtn = document.getElementById('sendBtn');
+const viewTheirProfileBtn = document.getElementById('viewTheirProfileBtn');
 const requestTradeBtn = document.getElementById('requestTradeBtn');
 const tradeModal = document.getElementById('tradeModal');
 const cancelTradeBtn = document.getElementById('cancelTradeBtn');
@@ -189,6 +190,15 @@ const profileUsername = document.getElementById('profileUsername');
 const profileTotalItems = document.getElementById('profileTotalItems');
 const profileSecretItems = document.getElementById('profileSecretItems');
 const profileAccountValue = document.getElementById('profileAccountValue');
+
+const theirProfileModal = document.getElementById('theirProfileModal');
+const closeTheirProfileBtn = document.getElementById('closeTheirProfileBtn');
+const theirProfileAvatar = document.getElementById('theirProfileAvatar');
+const theirProfileUsername = document.getElementById('theirProfileUsername');
+const theirProfileStatus = document.getElementById('theirProfileStatus');
+const theirProfileTotalItems = document.getElementById('theirProfileTotalItems');
+const theirProfileSecretItems = document.getElementById('theirProfileSecretItems');
+const theirProfileAccountValue = document.getElementById('theirProfileAccountValue');
 
 let myUsername = "Guest";
 
@@ -265,6 +275,7 @@ function openChat(userId) {
     renderUserList();
     chatTitle.textContent = `Chat with ${user.name}`;
     requestTradeBtn.classList.remove('hidden');
+    viewTheirProfileBtn.classList.remove('hidden');
     chatInput.disabled = false;
     sendBtn.disabled = false;
     chatInput.focus();
@@ -387,6 +398,36 @@ function openProfileModal() {
 
 function closeProfileModal() {
     profileModal.classList.add('hidden');
+}
+
+function openTheirProfileModal() {
+    if (!activeChatUserId) return;
+    const user = users.find(u => u.id === activeChatUserId);
+    if (!user) return;
+    
+    theirProfileUsername.textContent = "@" + user.name;
+    theirProfileAvatar.textContent = user.avatar;
+    theirProfileStatus.textContent = user.status;
+    
+    // Generate pseudo-random stats based on username length and char codes
+    let hash = 0;
+    for (let i = 0; i < user.name.length; i++) {
+        hash = user.name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    
+    const randomTotal = Math.abs(hash % 100) + 5; // 5 to 104
+    const randomSecret = Math.abs(hash % 10);     // 0 to 9
+    const randomAura = (Math.abs(hash % 500) + 100) * 10;
+    
+    theirProfileTotalItems.textContent = randomTotal;
+    theirProfileSecretItems.textContent = randomSecret;
+    theirProfileAccountValue.textContent = randomAura + " Aura";
+    
+    theirProfileModal.classList.remove('hidden');
+}
+
+function closeTheirProfileModal() {
+    theirProfileModal.classList.add('hidden');
 }
 
 // Player Hub Logic
@@ -609,6 +650,12 @@ function setupEventListeners() {
     closeProfileBtn.addEventListener('click', closeProfileModal);
     profileModal.addEventListener('click', (e) => {
         if (e.target === profileModal) closeProfileModal();
+    });
+    
+    viewTheirProfileBtn.addEventListener('click', openTheirProfileModal);
+    closeTheirProfileBtn.addEventListener('click', closeTheirProfileModal);
+    theirProfileModal.addEventListener('click', (e) => {
+        if (e.target === theirProfileModal) closeTheirProfileModal();
     });
     
     loginBtn.addEventListener('click', handleLogin);
